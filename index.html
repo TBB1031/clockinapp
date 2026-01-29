@@ -76,6 +76,35 @@
       pointer-events: none;
       z-index: 0;
     }
+          display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+      background: var(--bg-overlay-40);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--blue-10);
+    }
+    .tabs {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.01em;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .tab:hover {
+      background: var(--blue-10);
+      color: var(--text-primary);
+    }
 
     .container {
       max-width: 1000px;
@@ -316,7 +345,12 @@
   <div class="container">
     <h1>🕒 Time Clock</h1>
     <p class="subtitle">The world's best employee time tracking system</p>
-    <a href="analytics.html">Go to the New Page</a>
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <a href="index.html" class="tab">Data Entry</a>
+      <a href="analytics.html" class="tab active">Analytics</a>
+    </div>
 
     <!-- QUICK CLOCK IN/OUT -->
     <div class="card">
