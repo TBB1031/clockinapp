@@ -700,3 +700,705 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clock Out Log - Time Tracking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#020617">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Time Clock">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-dark: #0a0e27;
+      --bg-gradient-start: #1a1f3a;
+      --bg-gradient-end: #0f1729;
+      --card-bg: #1a1f3a99;
+      --card-border: #6495ed33;
+      --primary-blue: #6495ed;
+      --text-primary: #e8f1ff;
+      --text-secondary: #a0b4d4;
+      --text-muted: #6b7a99;
+      --accent-cyan: #4dd8ff;
+      --success: #00ff88;
+      --danger: #ff4d6d;
+      --glow-blue: #6495ed66;
+      --glow-cyan: #4dd8ff4d;
+      --blue-05: #6495ed0d;
+      --blue-08: #6495ed14;
+      --blue-10: #6495ed1a;
+      --blue-15: #6495ed26;
+      --blue-20: #6495ed33;
+      --blue-30: #6495ed4d;
+      --blue-40: #6495ed66;
+      --blue-50: #6495ed80;
+      --cyan-06: #4dd8ff0f;
+      --cyan-10: #4dd8ff1a;
+      --cyan-20: #4dd8ff33;
+      --cyan-40: #4dd8ff66;
+      --black-20: #00000033;
+      --black-30: #0000004d;
+      --white-05: #ffffff0d;
+      --bg-overlay-40: #0f172966;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(150deg, var(--bg-gradient-start) 50%, var(--bg-gradient-end) 800%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 40px 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, var(--blue-08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, var(--cyan-06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+      background: #0f172966;
+      padding: 6px;
+      fill-opacity: 0.5;
+      border-radius: 14px;
+      border: 1px solid #6495ed1a;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.01em;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .tab:hover {
+      background: var(--blue-10);
+      color: var(--text-primary);
+    }
+
+    .tab.active {
+      background: var(--primary-blue);
+      color: white;
+      box-shadow: 0 2px 12px var(--blue-40);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 56px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a0c4ff 0%, #c9dfff 50%, #6495ed 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    p.subtitle {
+      color: var(--text-secondary);
+      text-align: center;
+      font-size: 15px;
+      margin-bottom: 48px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow: 
+        0 8px 32px var(--black-30),
+        inset 0 1px 0 var(--white-05);
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: relative;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, 
+        var(--blue-20) 0%, 
+        transparent 50%, 
+        var(--cyan-10) 100%);
+      pointer-events: none;
+    }
+
+    .time-display {
+      text-align: center;
+      font-size: 2.8rem;
+      margin-bottom: 24px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 20px var(--glow-cyan);
+    }
+
+    .clock-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .clock-btn {
+      padding: 16px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .clock-btn.in {
+      background: linear-gradient(135deg, #00ff88 0%, #00e67a 100%);
+      color: #022c22;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+    }
+
+    .clock-btn.in:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 255, 136, 0.5);
+    }
+
+    .clock-btn.out {
+      background: linear-gradient(135deg, #ff4d6d 0%, #e63958 100%);
+      color: #450a0a;
+      box-shadow: 0 4px 16px rgba(255, 77, 109, 0.3);
+    }
+
+    .clock-btn.out:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255, 77, 109, 0.5);
+    }
+
+    .clock-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--blue-15);
+      background: rgba(15, 23, 41, 0.6);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px var(--glow-blue);
+      background: #0f1729cc;
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    button:not(.clock-btn):not(.tab) {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, #5a8ce8 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px var(--blue-30);
+      letter-spacing: 0.01em;
+      margin-top: 10px;
+    }
+
+    button:not(.clock-btn):not(.tab):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--blue-50);
+    }
+
+    button:not(.clock-btn):not(.tab):active {
+      transform: translateY(0);
+    }
+
+    .log {
+      border-top: 1px solid var(--blue-10);
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+
+    .log:first-child {
+      border-top: none;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .log h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .row span:last-child {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .hours {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue-15) 0%, var(--cyan-10) 100%);
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent-cyan);
+      border: 1px solid var(--cyan-20);
+    }
+
+    h2 {
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue-20), transparent);
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🕒 Time Clock</h1>
+    <p class="subtitle">The world's best employee time tracking system</p>
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <a href="index.html" class="tab">Data Entry</a>
+      <a href="analytics.html" class="tab active">Analytics</a>
+    </div>
+
+    <!-- QUICK CLOCK IN/OUT -->
+    <div class="card">
+      <h2>Quick Clock In/Out</h2>
+      <div class="time-display" id="currentTime"></div>
+      <div class="clock-buttons">
+        <button class="clock-btn in" id="clockInBtn">Clock In</button>
+        <button class="clock-btn out disabled" id="clockOutBtn">Clock Out</button>
+      </div>
+    </div>
+
+    <!-- MANUAL DATA ENTRY FORM -->
+    <div class="card">
+      <h2>Manual Entry</h2>
+      <label>Date</label>
+      <input id="date" type="date" />
+      <label>Venue Worked</label>
+      <input list="Venue" id="venue" />
+      <datalist id="Venue">
+        <option value="First Avenue"></option>
+        <option value="Fine Line"></option> 
+        <option value="7th Street Entry"></option>
+        <option value="Palace Theatre"></option>
+      </datalist>
+      <label>Time In</label>
+      <input id="timeIn" type="time" placeholder="00:00" />
+      <label>Time Out</label>
+      <input id="timeOut" type="time" placeholder="00:00" />
+      <label>Position</label>
+      <select id="job">
+        <option value="Tickets">Tickets</option>
+        <option value="Door" selected>Door</option>
+        <option value="Exit Door">Exit Door</option>
+      </select>
+      <button onclick="handleManualEntry()">Add Log Entry</button>
+    </div>
+
+    <!-- LOGS -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="margin: 0;">Recent Logs</h2>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="clearAllLogs()" style="width: auto; padding: 8px 16px; background: linear-gradient(135deg, #ff4d6d 0%, #e63958 100%); font-size: 13px; box-shadow: 0 2px 12px rgba(255, 77, 109, 0.3); margin: 0;">Clear</button>
+          <button onclick="exportToExcel()" style="width: auto; padding: 8px 16px; background: linear-gradient(135deg, #00ff88 0%, #00e67a 100%); font-size: 13px; box-shadow: 0 2px 12px rgba(0, 255, 136, 0.3); margin: 0;">Excel</button>
+          <button onclick="exportToCSV()" style="width: auto; padding: 8px 16px; background: linear-gradient(135deg, #4dd8ff 10%, #3bc2e6 100%); font-size: 13px; box-shadow: 0 2px 12px rgba(77, 216, 255, 0.3); margin: 0;">CSV</button>
+        </div>
+      </div>
+      <div id="logs"></div>
+    </div>
+  </div>
+
+  <!-- SheetJS library for Excel export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <script>
+    const logsEl = document.getElementById("logs");
+    const clockInBtn = document.getElementById("clockInBtn");
+    const clockOutBtn = document.getElementById("clockOutBtn");
+    const timeEl = document.getElementById("currentTime");
+
+    let clockInTime = localStorage.getItem("clockInTime");
+
+    // Update current time display
+    function updateTime() {
+      timeEl.textContent = new Date().toLocaleTimeString();
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // Helper functions
+    function parseTime(timeString) {
+      const [hours, minutes] = timeString.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+
+    function hoursBetween(start, end) {
+      let diffMs = end - start;
+      
+      if (diffMs < 0) {
+        diffMs += 24 * 60 * 60 * 1000;
+      }
+      
+      const hours = diffMs / 1000 / 60 / 60;
+      return hours.toFixed(2);
+    }
+
+    function formatDuration(ms) {
+      const totalMinutes = Math.floor(ms / 60000);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}h ${minutes}m`;
+    }
+
+    // Load logs and migrate old format
+    let logs = JSON.parse(localStorage.getItem("clockLogs")) || [];
+    
+    let needsMigration = false;
+    logs = logs.map(log => {
+      if (!log.timeInFormatted || !log.timeOutFormatted) {
+        needsMigration = true;
+        return {
+          ...log,
+          timeInFormatted: log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn)),
+          timeOutFormatted: log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut))
+        };
+      }
+      return log;
+    });
+    
+    if (needsMigration) {
+      localStorage.setItem("clockLogs", JSON.stringify(logs));
+    }
+
+    // Clock In/Out button state management
+    if (clockInTime) {
+      clockInBtn.classList.add("disabled");
+      clockOutBtn.classList.remove("disabled");
+    }
+
+    clockInBtn.onclick = () => {
+      if (clockInTime) return;
+      clockInTime = Date.now();
+      localStorage.setItem("clockInTime", clockInTime);
+      clockInBtn.classList.add("disabled");
+      clockOutBtn.classList.remove("disabled");
+    };
+
+    clockOutBtn.onclick = () => {
+      if (!clockInTime) return;
+
+      const clockOutTime = Date.now();
+      const duration = clockOutTime - clockInTime;
+      const timeIn = new Date(Number(clockInTime));
+      const timeOut = new Date(clockOutTime);
+      const hours = (duration / 1000 / 60 / 60).toFixed(2);
+
+      const entry = {
+        name: "Quick Clock",
+        job: "General",
+        timeInISO: timeIn.toISOString(),
+        timeOutISO: timeOut.toISOString(),
+        timeInStr: formatTime(timeIn),
+        timeOutStr: formatTime(timeOut),
+        timeInFormatted: formatTime(timeIn),
+        timeOutFormatted: formatTime(timeOut),
+        hours: hours,
+        date: new Date().toLocaleDateString(),
+      };
+
+      logs.unshift(entry);
+      localStorage.setItem("clockLogs", JSON.stringify(logs));
+
+      localStorage.removeItem("clockInTime");
+      clockInTime = null;
+
+      clockOutBtn.classList.add("disabled");
+      clockInBtn.classList.remove("disabled");
+
+      renderLogs();
+    };
+
+    // Manual entry form
+    function handleManualEntry() {
+      const dateStr = document.getElementById("date").value.trim();
+      const name = document.getElementById("venue").value.trim();
+      const timeInStr = document.getElementById("timeIn").value.trim();
+      const timeOutStr = document.getElementById("timeOut").value.trim();
+      const job = document.getElementById("job").value.trim();
+
+      if (!dateStr || !name || !timeInStr || !timeOutStr || !job) {
+        alert("Please fill out all fields");
+        return;
+      }
+
+      const timeIn = parseTime(timeInStr);
+      const timeOut = parseTime(timeOutStr);
+      const hours = hoursBetween(timeIn, timeOut);
+      
+      const selectedDate = new Date(dateStr + 'T00:00:00');
+      const formattedDate = selectedDate.toLocaleDateString();
+
+      logs.unshift({
+        name,
+        job,
+        timeInISO: timeIn.toISOString(),
+        timeOutISO: timeOut.toISOString(),
+        timeInStr,
+        timeOutStr,
+        timeInFormatted: formatTime(timeIn),
+        timeOutFormatted: formatTime(timeOut),
+        hours,
+        date: formattedDate,
+      });
+
+      localStorage.setItem("clockLogs", JSON.stringify(logs));
+      
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById("date").value = todayStr;
+      document.getElementById("venue").value = "";
+      document.getElementById("timeIn").value = "";
+      document.getElementById("timeOut").value = "";
+      document.getElementById("job").value = "Door";
+      
+      renderLogs();
+    }
+
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+    function exportToCSV() {
+      if (logs.length === 0) {
+        alert("No logs to export");
+        return;
+      }
+
+      const headers = ["Date", "Venue", "Job Title", "Time In", "Time Out", "Hours Worked"];
+      
+      const rows = logs.map(log => [
+        log.date,
+        log.name,
+        log.job,
+        log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn)),
+        log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut)),
+        log.hours
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.map(field => `"${field}"`).join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute("href", url);
+      const todayStr = new Date().toISOString().split('T')[0];
+      link.setAttribute("download", `clock-log-${todayStr}.csv`);
+      link.style.visibility = "hidden";
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+    }
+
+    function exportToExcel() {
+      if (logs.length === 0) {
+        alert("No logs to export");
+        return;
+      }
+
+      const headers = ["Date", "Venue", "Job Title", "Time In", "Time Out", "Hours Worked"];
+      
+      const rows = logs.map(log => [
+        log.date,
+        log.name,
+        log.job,
+        log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn)),
+        log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut)),
+        parseFloat(log.hours)
+      ]);
+
+      const wsData = [headers, ...rows];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+      ws['!cols'] = [
+        { wch: 12 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 12 }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Clock Out Log");
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const fileName = `clock-log-${todayStr}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    }
+
+    function clearAllLogs() {
+      if (logs.length === 0) {
+        alert("No logs to clear");
+        return;
+      }
+      
+      if (confirm("Are you sure you want to delete all log entries? This cannot be undone.")) {
+        logs = [];
+        localStorage.setItem("clockLogs", JSON.stringify(logs));
+        renderLogs();
+      }
+    }
+
+    function renderLogs() {
+      logsEl.innerHTML = "";
+
+      logs.forEach(log => {
+        const div = document.createElement("div");
+        div.className = "log";
+
+        const timeInDisplay = log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn));
+        const timeOutDisplay = log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut));
+
+        div.innerHTML = `
+          <h3>${log.name}</h3>
+          <div class="meta">${log.job} • ${log.date}</div>
+
+          <div class="row">
+            <span>Time In:</span>
+            <span>${timeInDisplay}</span>
+          </div>
+
+          <div class="row">
+            <span>Time Out:</span>
+            <span>${timeOutDisplay}</span>
+          </div>
+
+          <div class="hours">Hours this shift: ${log.hours}</div>
+        `;
+
+        logsEl.appendChild(div);
+      });
+    }
+
+    renderLogs();
+  </script>
+</body>
+</html>
