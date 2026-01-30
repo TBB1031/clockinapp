@@ -76,15 +76,18 @@
       pointer-events: none;
       z-index: 0;
     }
-          display: flex;
+    .tabs {
+      display: flex;
       gap: 10px;
       margin-bottom: 32px;
-      background: var(--bg-overlay-40);
+      background: #0f172966;
       padding: 6px;
+      fill-opacity: 0.5;
       border-radius: 14px;
-      border: 1px solid var(--blue-10);
+      border: 1px solid #6495ed1a;
     }
-    .tabs {
+
+    .tab {
       flex: 1;
       padding: 12px 20px;
       border-radius: 10px;
@@ -104,6 +107,12 @@
     .tab:hover {
       background: var(--blue-10);
       color: var(--text-primary);
+    }
+
+    .tab.active {
+      background: var(--primary-blue);
+      color: white;
+      box-shadow: 0 2px 12px var(--blue-40);
     }
 
     .container {
