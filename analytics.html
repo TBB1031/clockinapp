@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Clock Out Log - Analytics</title>
+  <title>Clock Out Log - Time Tracking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <style>
@@ -73,7 +73,7 @@
     }
 
     .container {
-      max-width: 520px;
+      max-width: 1000px;
       margin: 0 auto;
       position: relative;
       z-index: 1;
@@ -95,16 +95,16 @@
     p.subtitle {
       color: var(--text-secondary);
       text-align: center;
-      font-size: 20px;
+      font-size: 15px;
       margin-bottom: 48px;
-      font-weight: 200;
+      font-weight: 400;
       letter-spacing: 0.01em;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 40px;
+      border-radius: 20px;
       padding: 32px;
       margin-bottom: 24px;
       backdrop-filter: blur(40px);
@@ -179,7 +179,7 @@
     }
 
     table {
-      width: fit;
+      width: 100%;
       border-collapse: collapse;
       font-size: 14px;
     }
@@ -326,12 +326,171 @@
       letter-spacing: -0.01em;
       margin-bottom: 20px;
     }
+
+    .card.card--compact {
+      padding: 20px 24px;
+    }
+
+    .card.card--compact h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .card.card--compact .upload-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .card.card--compact .upload-row input[type="file"] {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+      min-width: 0;
+    }
+
+    .card.card--compact .upload-row button {
+      padding: 10px 20px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .table-filter {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--blue-15);
+      background: rgba(15, 23, 41, 0.6);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .table-filter:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px var(--glow-blue);
+      background: #0f1729cc;
+    }
+
+    .table-filter::placeholder {
+      color: var(--text-muted);
+    }
+
+    th[data-sort] {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th[data-sort]:hover {
+      background: var(--blue-15);
+    }
+
+    th[data-sort].sort-asc::after {
+      content: ' ▲';
+      color: var(--accent-cyan);
+    }
+
+    th[data-sort].sort-desc::after {
+      content: ' ▼';
+      color: var(--accent-cyan);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 24px 16px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      p.subtitle {
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      .card.card--compact {
+        padding: 16px 20px;
+      }
+
+      .card.card--compact .upload-row {
+        flex-direction: column;
+      }
+
+      .card.card--compact .upload-row button {
+        width: 100%;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .chart-container {
+        padding: 16px;
+      }
+
+      .bar-chart {
+        height: 220px;
+      }
+
+      th, td {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 12px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .tabs {
+        padding: 4px;
+      }
+
+      .tab {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .stat-value {
+        font-size: 28px;
+      }
+
+      .bar-chart {
+        height: 180px;
+      }
+
+      th, td {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>Clock Out Log</h1>
+    <h1>🕒 Time Clock</h1>
     <p class="subtitle">The world's best employee time tracking system</p>
 
     <!-- TABS -->
@@ -341,15 +500,15 @@
     </div>
 
     <!-- CSV UPLOAD -->
-    <div class="card">
+    <div class="card card--compact">
       <h2>Upload CSV File</h2>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <input type="file" id="csvFileInput" accept=".csv" style="padding: 12px; cursor: pointer;" />
-        <button onclick="uploadCSV()" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #4dd8ff 0%, #3bc2e6 100%); color: #022c3a; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 16px rgba(77, 216, 255, 0.3); transition: all 0.3s ease;">
+      <div class="upload-row">
+        <input type="file" id="csvFileInput" accept=".csv" style="cursor: pointer; border-radius: 12px; border: 1px solid var(--blue-15); background: rgba(15, 23, 41, 0.6); color: var(--text-primary);" />
+        <button onclick="uploadCSV()" style="background: linear-gradient(135deg, #4dd8ff 0%, #3bc2e6 100%); color: #022c3a; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 16px rgba(77, 216, 255, 0.3); transition: all 0.3s ease;">
           Upload & Process CSV
         </button>
-        <div id="uploadStatus" style="text-align: center; font-size: 14px; color: var(--text-secondary);"></div>
       </div>
+      <div id="uploadStatus" style="text-align: center; font-size: 13px; color: var(--text-secondary); margin-top: 8px;"></div>
     </div>
 
     <!-- STATS -->
@@ -379,16 +538,19 @@
     <!-- TABLE -->
     <div class="card">
       <h2>All Entries</h2>
-      <div>
+      <div style="margin-bottom: 16px;">
+        <input type="text" id="tableFilter" class="table-filter" placeholder="Filter by date, venue, or job..." />
+      </div>
+      <div class="table-wrapper">
         <table id="dataTable">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Venue</th>
-              <th>Job Title</th>
-              <th>Time In</th>
-              <th>Time Out</th>
-              <th>Hours</th>
+              <th data-sort="date">Date</th>
+              <th data-sort="name">Venue</th>
+              <th data-sort="job">Job Title</th>
+              <th data-sort="timeIn">Time In</th>
+              <th data-sort="timeOut">Time Out</th>
+              <th data-sort="hours">Hours</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -409,27 +571,75 @@
     // Load logs
     let logs = JSON.parse(localStorage.getItem("clockLogs")) || [];
 
+    let filterQuery = '';
+    let sortColumn = 'date';
+    let sortAsc = false;
+
+    function renderTable(logsToShow) {
+      const tableRows = logsToShow.map(log => `
+        <tr>
+          <td>${log.date}</td>
+          <td>${log.name}</td>
+          <td>${log.job}</td>
+          <td>${log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn))}</td>
+          <td>${log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut))}</td>
+          <td>${log.hours}</td>
+        </tr>
+      `);
+      document.getElementById('tableBody').innerHTML = tableRows.join('');
+    }
+
+    function compareLogs(a, b) {
+      const getVal = (log, col) => {
+        switch (col) {
+          case 'date': return log.date || '';
+          case 'name': return (log.name || '').toLowerCase();
+          case 'job': return (log.job || '').toLowerCase();
+          case 'timeIn': return log.timeInFormatted || formatTime(new Date(log.timeInISO || log.timeIn)) || '';
+          case 'timeOut': return log.timeOutFormatted || formatTime(new Date(log.timeOutISO || log.timeOut)) || '';
+          case 'hours': return parseFloat(log.hours) || 0;
+          default: return '';
+        }
+      };
+      const va = getVal(a, sortColumn);
+      const vb = getVal(b, sortColumn);
+      let cmp = 0;
+      if (typeof va === 'number' && typeof vb === 'number') {
+        cmp = va - vb;
+      } else {
+        cmp = String(va).localeCompare(String(vb));
+      }
+      return sortAsc ? cmp : -cmp;
+    }
+
+    function applyFilterAndSort() {
+      const q = filterQuery.trim().toLowerCase();
+      let filtered = q
+        ? logs.filter(log =>
+            (log.date || '').toLowerCase().includes(q) ||
+            (log.name || '').toLowerCase().includes(q) ||
+            (log.job || '').toLowerCase().includes(q))
+        : [...logs];
+      filtered.sort(compareLogs);
+      renderTable(filtered);
+
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.sort === sortColumn) {
+          th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+        }
+      });
+    }
+
     function renderAnalytics() {
       const totalEntries = logs.length;
       let totalHours = 0;
       const venueHours = {};
-      const tableRows = [];
 
       logs.forEach(log => {
         const hours = parseFloat(log.hours);
         totalHours += hours;
         venueHours[log.name] = (venueHours[log.name] || 0) + hours;
-        
-        tableRows.push(`
-          <tr>
-            <td>${log.date}</td>
-            <td>${log.name}</td>
-            <td>${log.job}</td>
-            <td>${log.timeInFormatted || formatTime(new Date(log.timeIn))}</td>
-            <td>${log.timeOutFormatted || formatTime(new Date(log.timeOut))}</td>
-            <td>${log.hours}</td>
-          </tr>
-        `);
       });
 
       const avgHours = totalEntries > 0 ? (totalHours / totalEntries).toFixed(2) : 0;
@@ -438,8 +648,7 @@
       document.getElementById('totalHours').textContent = totalHours.toFixed(2);
       document.getElementById('avgHours').textContent = avgHours;
 
-      const tableBody = document.getElementById('tableBody');
-      tableBody.innerHTML = tableRows.join('');
+      applyFilterAndSort();
 
       const chartEl = document.getElementById('barChart');
       chartEl.innerHTML = '';
@@ -465,6 +674,23 @@
         chartEl.appendChild(bar);
       });
     }
+
+    document.getElementById('tableFilter').addEventListener('input', (e) => {
+      filterQuery = e.target.value;
+      applyFilterAndSort();
+    });
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        if (th.dataset.sort === sortColumn) {
+          sortAsc = !sortAsc;
+        } else {
+          sortColumn = th.dataset.sort;
+          sortAsc = true;
+        }
+        applyFilterAndSort();
+      });
+    });
 
     renderAnalytics();
   </script>
