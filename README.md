@@ -1,7 +1,6 @@
 # 🕒 Time Clock App
 
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://tbb1031.github.io/clockinapp/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-enabled-orange.svg)](https://web.dev/progressive-web-apps/)
 
 A beautiful, modern time tracking web application designed for employees and small businesses. Track work hours effortlessly with an elegant dark-themed interface, offline support, and powerful export capabilities.
@@ -208,7 +207,7 @@ Contributions are welcome! Here's how you can help:
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source. Please check with the repository owner regarding licensing terms.
 
 ## 🙏 Acknowledgments
 
