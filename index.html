@@ -335,6 +335,30 @@
       border: 1px solid var(--cyan-20);
     }
 
+    .log-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .log-actions button {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .log-actions button.edit-btn {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, #5a8ce8 100%);
+      box-shadow: 0 2px 12px var(--blue-30);
+    }
+
+    .log-actions button.delete-btn {
+      background: linear-gradient(135deg, #ff4d6d 0%, #e63958 100%);
+      box-shadow: 0 2px 12px rgba(255, 77, 109, 0.3);
+      color: white;
+    }
+
     h2 {
       color: var(--text-primary);
       font-size: 18px;
@@ -352,7 +376,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>🕒 Time Clock</h1>
+    <h1> Time Clock</h1>
     <p class="subtitle">The world's best employee time tracking system</p>
     
     <!-- TABS -->
@@ -665,10 +689,42 @@
       }
     }
 
+    function deleteLog(index) {
+      if (confirm("Are you sure you want to delete this log entry?")) {
+        logs.splice(index, 1);
+        localStorage.setItem("clockLogs", JSON.stringify(logs));
+        renderLogs();
+      }
+    }
+
+    function editLog(index) {
+      const log = logs[index];
+      
+      // Populate the form with log data
+      document.getElementById("date").value = new Date(log.date).toISOString().split('T')[0];
+      document.getElementById("venue").value = log.name;
+      
+      // Parse time strings back to time input format
+      const timeInDate = new Date(log.timeInISO || log.timeIn);
+      const timeOutDate = new Date(log.timeOutISO || log.timeOut);
+      
+      document.getElementById("timeIn").value = timeInDate.toTimeString().slice(0, 5);
+      document.getElementById("timeOut").value = timeOutDate.toTimeString().slice(0, 5);
+      document.getElementById("job").value = log.job;
+      
+      // Delete the old entry
+      logs.splice(index, 1);
+      localStorage.setItem("clockLogs", JSON.stringify(logs));
+      renderLogs();
+      
+      // Scroll to form
+      document.querySelector('.card:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+    }
+
     function renderLogs() {
       logsEl.innerHTML = "";
 
-      logs.forEach(log => {
+      logs.forEach((log, index) => {
         const div = document.createElement("div");
         div.className = "log";
 
@@ -690,6 +746,11 @@
           </div>
 
           <div class="hours">Hours this shift: ${log.hours}</div>
+          
+          <div class="log-actions">
+            <button class="edit-btn" onclick="editLog(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteLog(${index})">Delete</button>
+          </div>
         `;
 
         logsEl.appendChild(div);
