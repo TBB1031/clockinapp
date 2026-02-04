@@ -17,8 +17,6 @@ jobs:
     - name: Install dependencies
       run: make
 
-    - name: Generate configure script
-      run: autoreconf -i  # Adjust as required for your project
 
     - name: Run check
       run: make check
